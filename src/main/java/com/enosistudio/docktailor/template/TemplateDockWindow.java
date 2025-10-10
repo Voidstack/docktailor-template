@@ -91,9 +91,10 @@ public class TemplateDockWindow extends FxDockWindow {
             menuApplication.getItems().add(menuLeaveApp);
         });
         Menu menuWindows = new Menu("Windows");
-        ServiceDocktailor.getInstance().add(PersonDockPane.class);
-        ServiceDocktailor.getInstance().add(TestDockPane.class);
-        menuWindows.getItems().addAll(ServiceDocktailor.getInstance().createMenuItems(this));
+
+        ServiceDocktailor.getInstance().setAll(PersonDockPane.class, TestDockPane.class);
+
+        menuWindows.getItems().setAll(ServiceDocktailor.getInstance().createMenuItems(this));
         fxMenuBar.add(menuWindows);
         return fxMenuBar;
     }
