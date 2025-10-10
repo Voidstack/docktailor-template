@@ -50,10 +50,6 @@ public class TemplateDockWindow extends FxDockWindow {
         });
     }
 
-    private static void loadDefaultAction() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     protected static void actionLoadSettings(String fileName) {
         log.info("Docktailor : Load default interface configuration : {}", fileName);
         FxFramework.openDockSystemConf(fileName);
@@ -73,13 +69,22 @@ public class TemplateDockWindow extends FxDockWindow {
         Menu menuApplication = new Menu("Application");
         fxMenuBar.add(menuApplication);
         Platform.runLater(() -> {
-            MenuItem menuItemSaveLayout = new MenuItem("Sauvegarder la configuration");
-            menuItemSaveLayout.setOnAction(e -> actionSaveSettings());
+            MenuItem menuItemOpenConf = new MenuItem("Ouvrir l'explorateur de fichiers");
+            menuItemOpenConf.setOnAction(e -> TemplateDockSettings.getInstance().openInExplorer());
+            menuApplication.getItems().add(menuItemOpenConf);
 
-            MenuItem menuItemLoadLayout = new MenuItem("Charger une configuration");
+            MenuItem menuItemSaveLayout = new MenuItem("Sauvegarder la configuration");
+            menuItemSaveLayout.setOnAction(e -> TemplateDockSettings.getInstance().saveCurrentConf());
+            menuApplication.getItems().add(menuItemSaveLayout);
+
+            MenuItem menuItemLoadLayout = new MenuItem("Recharger une configuration sauvegardée");
+            menuItemLoadLayout.setOnAction(e -> {
+                TemplateDockSettings.getInstance().loadCurrentSavedConf();
+            });
+            menuApplication.getItems().add(menuItemLoadLayout);
 
             MenuItem menuItemDefaultConf = new MenuItem("Charger la configuration par défaut");
-            menuItemDefaultConf.setOnAction(e -> loadDefaultAction());
+            menuItemDefaultConf.setOnAction(e -> TemplateDockSettings.getInstance().loadDefault());
             menuApplication.getItems().add(menuItemDefaultConf);
             MenuItem menuLeaveApp = new MenuItem("Quitter l'application");
             menuLeaveApp.setOnAction(e -> FxFramework.exit());

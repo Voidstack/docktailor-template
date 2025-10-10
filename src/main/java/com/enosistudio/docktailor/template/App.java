@@ -1,14 +1,11 @@
 package com.enosistudio.docktailor.template;
 
-import com.enosistudio.docktailor.common.AGlobalSettings;
-import com.enosistudio.docktailor.fx.FxFramework;
 import com.enosistudio.docktailor.fxdock.internal.ServiceDocktailor;
 import com.enosistudio.generated.R;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,13 +30,7 @@ public class App extends Application {
         // setup css
         Application.setUserAgentStylesheet(ServiceDocktailor.getDocktailorCss().getAbsoluteURL().toExternalForm());
 
-        AGlobalSettings store;
-        try {
-            store = TemplateDockSettings.getInstance();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        TemplateDockSchema templateDockSchema = new TemplateDockSchema(store);
-        FxFramework.openDockSystemConf(templateDockSchema);
+        ServiceDocktailor.getInstance().setDocktailorSaveFolder("template");
+        TemplateDockSettings.getInstance().open();
     }
 }
