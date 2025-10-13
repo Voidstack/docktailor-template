@@ -32,7 +32,6 @@ public class App extends Application {
         Application.setUserAgentStylesheet(ServiceDocktailor.getDocktailorCss().getAbsoluteURL().toExternalForm());
 
         ServiceDocktailor.setDocktailorSaveFolder(Path.of(System.getenv("APPDATA"), "enosistudio", "docktailor-template").toString());
-
         String url = App.class.getResource("/com/enosistudio/docktailor/template/template_default.conf").getFile();
         ServiceDocktailor.setDefaultUiFile(url);
 
