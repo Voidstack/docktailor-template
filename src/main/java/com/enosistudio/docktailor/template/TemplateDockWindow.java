@@ -5,6 +5,8 @@
 
 package com.enosistudio.docktailor.template;
 
+import com.enosistudio.docktailor.common.AGlobalSettings;
+import com.enosistudio.docktailor.common.GlobalSettings;
 import com.enosistudio.docktailor.fx.FxAction;
 import com.enosistudio.docktailor.fx.FxFramework;
 import com.enosistudio.docktailor.fx.FxMenuBar;
@@ -15,22 +17,20 @@ import com.enosistudio.docktailor.sample.mvc.MainApp;
 import com.enosistudio.docktailor.sample.mvc.controller.PersonDockPane;
 import com.enosistudio.docktailor.sample.mvc.controller.TestDockPane;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import net.yetihafen.javafx.customcaption.CaptionConfiguration;
 import net.yetihafen.javafx.customcaption.CustomCaption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class TemplateDockWindow extends FxDockWindow {
+    private static final String FILE_1 = Path.of(ServiceDocktailor.getDocktailorSaveFolder(), "docktailor_1.ui").toString();
+
     private static final Logger log = LoggerFactory.getLogger(TemplateDockWindow.class);
     public final FxAction windowCheckAction = new FxAction();
 
@@ -39,29 +39,11 @@ public class TemplateDockWindow extends FxDockWindow {
 
         this.getIcons().add(MainApp.IMAGE);
         FxMenuBar fxMenuBar = this.createMenu();
-        this.getScene().widthProperty().addListener((obs, oldVal, newVal) -> {
-            fxMenuBar.setMaxWidth(newVal.doubleValue() - 138.0);
-        });
+        this.getScene().widthProperty().addListener((obs, oldVal, newVal) -> fxMenuBar.setMaxWidth(newVal.doubleValue() - 138.0));
         this.setTop(fxMenuBar);
         this.setTitle("DockTailor example");
         LocalSettings.get(this).add("CHECKBOX_MENU", this.windowCheckAction);
-        Platform.runLater(() -> {
-            CustomCaption.useForStage(this, (new CaptionConfiguration()).setCaptionDragRegion(fxMenuBar).setControlBackgroundColor(Color.rgb(60, 63, 65)));
-        });
-    }
-
-    protected static void actionLoadSettings(String fileName) {
-        log.info("Docktailor : Load default interface configuration : {}", fileName);
-        FxFramework.openDockSystemConf(fileName);
-        ServiceDocktailor.getInstance().setLastUIConfigUsed(fileName);
-        ServiceDocktailor.getInstance().getConfigDocktailor().save();
-    }
-
-    protected static void actionSaveSettings(String fileName) {
-        log.info("Docktailor : Save current interface configuration in {}", fileName);
-        FxFramework.storeLayout(fileName);
-        ServiceDocktailor.getInstance().setLastUIConfigUsed(fileName);
-        ServiceDocktailor.getInstance().getConfigDocktailor().save();
+        Platform.runLater(() -> CustomCaption.useForStage(this, (new CaptionConfiguration()).setCaptionDragRegion(fxMenuBar).setControlBackgroundColor(Color.rgb(60, 63, 65))));
     }
 
     protected FxMenuBar createMenu() {
@@ -69,24 +51,22 @@ public class TemplateDockWindow extends FxDockWindow {
         Menu menuApplication = new Menu("Application");
         fxMenuBar.add(menuApplication);
         Platform.runLater(() -> {
-            MenuItem menuItemOpenConf = new MenuItem("Ouvrir l'explorateur de fichiers");
-            menuItemOpenConf.setOnAction(e -> TemplateDockSettings.getInstance().openInExplorer());
+            MenuItem menuItemOpenConf = new MenuItem("\uD83D\uDCC2 Ouvrir l'explorateur de fichiers");
+            menuItemOpenConf.setOnAction(e -> openFolder(ServiceDocktailor.getDocktailorSaveFolder()));
             menuApplication.getItems().add(menuItemOpenConf);
 
-            MenuItem menuItemSaveLayout = new MenuItem("Sauvegarder la configuration");
-            menuItemSaveLayout.setOnAction(e -> TemplateDockSettings.getInstance().saveCurrentConf());
+            MenuItem menuItemSaveLayout = new MenuItem("\uD83D\uDCBE Sauvegarder la configuration");
+            menuItemSaveLayout.setOnAction(e -> actionSaveSettings(FILE_1));
             menuApplication.getItems().add(menuItemSaveLayout);
 
-            MenuItem menuItemLoadLayout = new MenuItem("Recharger une configuration sauvegardée");
-            menuItemLoadLayout.setOnAction(e -> {
-                TemplateDockSettings.getInstance().loadCurrentSavedConf();
-            });
+            MenuItem menuItemLoadLayout = new MenuItem("Recharger la configuration");
+            menuItemLoadLayout.setOnAction(e -> actionLoadSettings(FILE_1));
             menuApplication.getItems().add(menuItemLoadLayout);
 
             MenuItem menuItemDefaultConf = new MenuItem("Charger la configuration par défaut");
-            menuItemDefaultConf.setOnAction(e -> TemplateDockSettings.getInstance().loadDefault());
+            menuItemDefaultConf.setOnAction(e -> actionLoadSettings(ServiceDocktailor.getDefaultUiFile()));
             menuApplication.getItems().add(menuItemDefaultConf);
-            MenuItem menuLeaveApp = new MenuItem("Quitter l'application");
+            MenuItem menuLeaveApp = new MenuItem("❌ Quitter l'application");
             menuLeaveApp.setOnAction(e -> FxFramework.exit());
             menuApplication.getItems().add(menuLeaveApp);
         });
@@ -99,26 +79,45 @@ public class TemplateDockWindow extends FxDockWindow {
         return fxMenuBar;
     }
 
-    private CustomMenuItem addCustomConfiguration(String strLabel, String fileName) {
-        HBox hbox = new HBox();
-        CustomMenuItem menuCustomSave1 = new CustomMenuItem(hbox);
-        menuCustomSave1.setHideOnClick(false);
-        hbox.setSpacing(3.0);
-        hbox.setPadding(Insets.EMPTY);
-        hbox.setAlignment(Pos.CENTER);
-        Label label = new Label(strLabel);
-        Region separator = new Region();
-        HBox.setHgrow(separator, Priority.ALWAYS);
-        hbox.getChildren().addAll(label, separator);
-        Button btnSave = new Button("Sauvegarder");
-        btnSave.setOnAction(event -> actionSaveSettings(fileName));
-        hbox.getChildren().add(btnSave);
-        if (Files.exists(Path.of(fileName))) {
-            Button btnLoad = new Button("Charger");
-            btnLoad.setOnAction(event -> actionLoadSettings(fileName));
-            hbox.getChildren().add(btnLoad);
+
+    /**
+     * Ouvre l’explorateur de fichiers Windows à l’emplacement du fichier de configuration.
+     */
+    private void openFolder(String folderString) {
+        try {
+            File file = new File(folderString);
+            if (file.exists()) {
+                // Ouvre l’explorateur sur le fichier sélectionné
+                new ProcessBuilder("explorer.exe", "/select,", file.getAbsolutePath()).start();
+            } else {
+                // Si le fichier n’existe pas encore, ouvre simplement le dossier
+                new ProcessBuilder("explorer.exe", file.getParentFile().getAbsolutePath()).start();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Impossible d’ouvrir l’explorateur de fichiers", e);
         }
 
-        return menuCustomSave1;
+    }
+
+    protected static void actionLoadSettings(String fileName) {
+        log.info("Docktailor : Load default interface configuration : {}", fileName);
+        GlobalSettings.getInstance().setFileProvider(fileName);
+        AGlobalSettings store = GlobalSettings.getInstance();
+        TemplateDockSchema templateDockSchema = new TemplateDockSchema(store);
+        FxFramework.openDockSystemConf(templateDockSchema);
+        ServiceDocktailor.getInstance().setLastUIConfigUsed(fileName);
+        ServiceDocktailor.getInstance().getConfigDocktailor().save();
+    }
+
+    /**
+     * Use GlobalSettings.FILE...
+     *
+     * @param fileName :
+     */
+    protected static void actionSaveSettings(String fileName) {
+        log.info("Docktailor : Save current interface configuration in {}", fileName);
+        FxFramework.storeLayout(fileName);
+        ServiceDocktailor.getInstance().setLastUIConfigUsed(fileName);
+        ServiceDocktailor.getInstance().getConfigDocktailor().save();
     }
 }
