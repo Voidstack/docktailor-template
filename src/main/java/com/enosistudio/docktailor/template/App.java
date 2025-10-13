@@ -19,9 +19,13 @@ public class App extends Application {
     @Getter
     private static final List<String> ARGS = new ArrayList<>();
 
+    String defaultUiFile = App.class.getResource("/com/enosistudio/docktailor/template/template_default.conf").getFile();
+
     public static void main(String[] args) {
         ARGS.addAll(Arrays.stream(args).toList());
         ServiceDocktailor.IS_DEBUG = ARGS.contains("-debug");
+        ServiceDocktailor.setDocktailorSaveFolder(Path.of(System.getenv("APPDATA"), "enosistudio", "docktailor-template").toString());
+
 
         launch(args);
     }
@@ -31,13 +35,12 @@ public class App extends Application {
         // setup css
         Application.setUserAgentStylesheet(ServiceDocktailor.getDocktailorCss().getAbsoluteURL().toExternalForm());
 
-        ServiceDocktailor.setDocktailorSaveFolder(Path.of(System.getenv("APPDATA"), "enosistudio", "docktailor-template").toString());
-        String url = App.class.getResource("/com/enosistudio/docktailor/template/template_default.conf").getFile();
-        ServiceDocktailor.setDefaultUiFile(url);
+        // setup default Ui save
+        ServiceDocktailor.setDefaultUiFile(defaultUiFile);
 
+        // set file to use to load the app (the last config saved here)
         GlobalSettings.getInstance().setFileProvider(ServiceDocktailor.getInstance().getLastUIConfigUsed());
-        AGlobalSettings store = GlobalSettings.getInstance();
-        TemplateDockSchema templateDockSchema = new TemplateDockSchema(store);
-        FxFramework.openDockSystemConf(templateDockSchema);
+
+        FxFramework.openDockSystemConf(new TemplateDockSchema());
     }
 }

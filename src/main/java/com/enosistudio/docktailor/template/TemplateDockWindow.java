@@ -102,8 +102,7 @@ public class TemplateDockWindow extends FxDockWindow {
     protected static void actionLoadSettings(String fileName) {
         log.info("Docktailor : Load default interface configuration : {}", fileName);
         GlobalSettings.getInstance().setFileProvider(fileName);
-        AGlobalSettings store = GlobalSettings.getInstance();
-        TemplateDockSchema templateDockSchema = new TemplateDockSchema(store);
+        TemplateDockSchema templateDockSchema = new TemplateDockSchema();
         FxFramework.openDockSystemConf(templateDockSchema);
         ServiceDocktailor.getInstance().setLastUIConfigUsed(fileName);
         ServiceDocktailor.getInstance().getConfigDocktailor().save();

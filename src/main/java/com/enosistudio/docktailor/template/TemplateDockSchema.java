@@ -1,6 +1,7 @@
 package com.enosistudio.docktailor.template;
 
 import com.enosistudio.docktailor.common.AGlobalSettings;
+import com.enosistudio.docktailor.common.GlobalSettings;
 import com.enosistudio.docktailor.fxdock.FxDockPane;
 import com.enosistudio.docktailor.fxdock.FxDockSchema;
 import com.enosistudio.docktailor.fxdock.internal.IDockPane;
@@ -10,8 +11,12 @@ import javafx.stage.Stage;
 import java.util.Iterator;
 
 public class TemplateDockSchema  extends FxDockSchema {
-    public TemplateDockSchema(AGlobalSettings store) {
-        super(store);
+    protected TemplateDockSchema(AGlobalSettings s) {
+        super(s);
+    }
+
+    public TemplateDockSchema() {
+        super(GlobalSettings.getInstance());
     }
 
     public FxDockPane createPane(String id) throws IllegalArgumentException {
