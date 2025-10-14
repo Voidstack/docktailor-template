@@ -1,20 +1,14 @@
 package com.enosistudio.docktailor.template;
 
-import com.enosistudio.docktailor.common.AGlobalSettings;
 import com.enosistudio.docktailor.common.GlobalSettings;
 import com.enosistudio.docktailor.fxdock.FxDockPane;
 import com.enosistudio.docktailor.fxdock.FxDockSchema;
 import com.enosistudio.docktailor.fxdock.internal.IDockPane;
 import com.enosistudio.docktailor.fxdock.internal.ServiceDocktailor;
-import javafx.stage.Stage;
 
 import java.util.Iterator;
 
 public class TemplateDockSchema  extends FxDockSchema {
-    protected TemplateDockSchema(AGlobalSettings s) {
-        super(s);
-    }
-
     public TemplateDockSchema() {
         super(GlobalSettings.getInstance());
     }
@@ -34,11 +28,11 @@ public class TemplateDockSchema  extends FxDockSchema {
         return newInstance.createDockPane();
     }
 
-    public Stage createWindow(String name) {
+    public TemplateDockWindow createWindow(String name) {
         return new TemplateDockWindow();
     }
 
-    public Stage createDefaultWindow() {
+    public TemplateDockWindow createDefaultWindow() {
         return new TemplateDockWindow();
     }
 }
