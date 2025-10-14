@@ -5,7 +5,6 @@
 
 package com.enosistudio.docktailor.template;
 
-import com.enosistudio.docktailor.common.AGlobalSettings;
 import com.enosistudio.docktailor.common.GlobalSettings;
 import com.enosistudio.docktailor.fx.FxAction;
 import com.enosistudio.docktailor.fx.FxFramework;
@@ -13,12 +12,16 @@ import com.enosistudio.docktailor.fx.FxMenuBar;
 import com.enosistudio.docktailor.fx.LocalSettings;
 import com.enosistudio.docktailor.fxdock.FxDockWindow;
 import com.enosistudio.docktailor.fxdock.internal.ServiceDocktailor;
+import com.enosistudio.docktailor.other.PopupSaveUI;
 import com.enosistudio.docktailor.sample.mvc.MainApp;
 import com.enosistudio.docktailor.sample.mvc.controller.PersonDockPane;
 import com.enosistudio.docktailor.sample.mvc.controller.TestDockPane;
 import javafx.application.Platform;
-import javafx.scene.control.*;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
+import lombok.Getter;
 import net.yetihafen.javafx.customcaption.CaptionConfiguration;
 import net.yetihafen.javafx.customcaption.CustomCaption;
 import org.slf4j.Logger;
@@ -30,6 +33,9 @@ import java.nio.file.Path;
 
 public class TemplateDockWindow extends FxDockWindow {
     private static final String FILE_1 = Path.of(ServiceDocktailor.getDocktailorSaveFolder(), "docktailor_1.ui").toString();
+
+    @Getter
+    private final PopupSaveUI popupSaveUI = new PopupSaveUI();
 
     private static final Logger log = LoggerFactory.getLogger(TemplateDockWindow.class);
     public final FxAction windowCheckAction = new FxAction();
@@ -44,6 +50,17 @@ public class TemplateDockWindow extends FxDockWindow {
         this.setTitle("DockTailor example");
         LocalSettings.get(this).add("CHECKBOX_MENU", this.windowCheckAction);
         Platform.runLater(() -> CustomCaption.useForStage(this, (new CaptionConfiguration()).setCaptionDragRegion(fxMenuBar).setControlBackgroundColor(Color.rgb(60, 63, 65))));
+
+        this.getOnDocktailorEvent().addListener(this::showPopup);
+
+        this.getPopupSaveUI().setOnSave(e -> {
+            actionSaveSettings(FILE_1);
+            PopupSaveUI.hides();
+        });
+    }
+
+    private void showPopup() {
+        popupSaveUI.show(this.getParentStackPane());
     }
 
     protected FxMenuBar createMenu() {
@@ -66,6 +83,9 @@ public class TemplateDockWindow extends FxDockWindow {
             MenuItem menuItemDefaultConf = new MenuItem("Charger la configuration par défaut");
             menuItemDefaultConf.setOnAction(e -> actionLoadSettings(ServiceDocktailor.getDefaultUiFile()));
             menuApplication.getItems().add(menuItemDefaultConf);
+
+            menuApplication.getItems().add(new SeparatorMenuItem());
+
             MenuItem menuLeaveApp = new MenuItem("❌ Quitter l'application");
             menuLeaveApp.setOnAction(e -> FxFramework.exit());
             menuApplication.getItems().add(menuLeaveApp);

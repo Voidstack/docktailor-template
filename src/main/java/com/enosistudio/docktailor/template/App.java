@@ -1,6 +1,5 @@
 package com.enosistudio.docktailor.template;
 
-import com.enosistudio.docktailor.common.AGlobalSettings;
 import com.enosistudio.docktailor.common.GlobalSettings;
 import com.enosistudio.docktailor.fx.FxFramework;
 import com.enosistudio.docktailor.fxdock.internal.ServiceDocktailor;
@@ -8,8 +7,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import lombok.Getter;
 
-import java.io.FileNotFoundException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +22,6 @@ public class App extends Application {
         ARGS.addAll(Arrays.stream(args).toList());
         ServiceDocktailor.IS_DEBUG = ARGS.contains("-debug");
         ServiceDocktailor.setDocktailorSaveFolder(Path.of(System.getenv("APPDATA"), "enosistudio", "docktailor-template").toString());
-
 
         launch(args);
     }
