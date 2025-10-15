@@ -1,8 +1,8 @@
 package com.enosistudio.docktailor.template;
 
 import com.enosistudio.docktailor.common.GlobalSettings;
-import com.enosistudio.docktailor.fx.FxFramework;
-import com.enosistudio.docktailor.fxdock.internal.ServiceDocktailor;
+import com.enosistudio.docktailor.fx.DocktailorUtility;
+import com.enosistudio.docktailor.fxdock.internal.DocktailorService;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -20,8 +20,8 @@ public class App extends Application {
 
     public static void main(String[] args) {
         ARGS.addAll(Arrays.stream(args).toList());
-        ServiceDocktailor.IS_DEBUG = ARGS.contains("-debug");
-        ServiceDocktailor.setDocktailorSaveFolder(Path.of(System.getenv("APPDATA"), "enosistudio", "docktailor-template").toString());
+        DocktailorService.IS_DEBUG = ARGS.contains("-debug");
+        DocktailorService.setDocktailorSaveFolder(Path.of(System.getenv("APPDATA"), "enosistudio", "docktailor-template").toString());
 
         launch(args);
     }
@@ -29,14 +29,14 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         // setup css
-        Application.setUserAgentStylesheet(ServiceDocktailor.getDocktailorCss().getAbsoluteURL().toExternalForm());
+        Application.setUserAgentStylesheet(DocktailorService.getDocktailorCss().getAbsoluteURL().toExternalForm());
 
         // setup default Ui save
-        ServiceDocktailor.setDefaultUiFile(defaultUiFile);
+        DocktailorService.setDefaultUiFile(defaultUiFile);
 
         // set file to use to load the app (the last config saved here)
-        GlobalSettings.getInstance().setFileProvider(ServiceDocktailor.getInstance().getLastUIConfigUsed());
+        GlobalSettings.getInstance().setFileProvider(DocktailorService.getInstance().getLastUIConfigUsed());
 
-        FxFramework.openDockSystemConf(new TemplateDockSchema());
+        DocktailorUtility.openDockSystemConf(new TemplateDockSchema());
     }
 }
