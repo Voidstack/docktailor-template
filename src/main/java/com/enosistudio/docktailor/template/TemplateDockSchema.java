@@ -1,10 +1,10 @@
 package com.enosistudio.docktailor.template;
 
+import com.enosistudio.docktailor.DocktailorService;
 import com.enosistudio.docktailor.common.GlobalSettings;
-import com.enosistudio.docktailor.fxdock.FxDockPane;
-import com.enosistudio.docktailor.fxdock.FxDockSchema;
-import com.enosistudio.docktailor.fxdock.internal.DocktailorService;
-import com.enosistudio.docktailor.fxdock.internal.IDockPane;
+import com.enosistudio.docktailor.fx.fxdock.FxDockPane;
+import com.enosistudio.docktailor.fx.fxdock.FxDockSchema;
+import com.enosistudio.docktailor.fx.fxdock.internal.IDockPane;
 
 import java.util.Iterator;
 

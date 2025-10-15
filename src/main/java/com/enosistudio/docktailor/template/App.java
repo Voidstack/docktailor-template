@@ -1,8 +1,8 @@
 package com.enosistudio.docktailor.template;
 
+import com.enosistudio.docktailor.DocktailorService;
+import com.enosistudio.docktailor.DocktailorUtility;
 import com.enosistudio.docktailor.common.GlobalSettings;
-import com.enosistudio.docktailor.fx.DocktailorUtility;
-import com.enosistudio.docktailor.fxdock.internal.DocktailorService;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -29,7 +29,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         // setup css
-        Application.setUserAgentStylesheet(DocktailorService.getDocktailorCss().getAbsoluteURL().toExternalForm());
+        Application.setUserAgentStylesheet(DocktailorUtility.getDocktailorCss().getAbsoluteURL().toExternalForm());
 
         // setup default Ui save
         DocktailorService.setDefaultUiFile(defaultUiFile);

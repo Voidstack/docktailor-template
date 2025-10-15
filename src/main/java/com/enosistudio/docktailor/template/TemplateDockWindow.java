@@ -5,17 +5,16 @@
 
 package com.enosistudio.docktailor.template;
 
+import com.enosistudio.docktailor.DocktailorService;
+import com.enosistudio.docktailor.DocktailorUtility;
 import com.enosistudio.docktailor.common.GlobalSettings;
-import com.enosistudio.docktailor.fx.DocktailorUtility;
 import com.enosistudio.docktailor.fx.FxAction;
 import com.enosistudio.docktailor.fx.FxMenuBar;
 import com.enosistudio.docktailor.fx.LocalSettings;
-import com.enosistudio.docktailor.fxdock.FxDockWindow;
-import com.enosistudio.docktailor.fxdock.internal.DocktailorService;
-import com.enosistudio.docktailor.other.PopupSaveUI;
-import com.enosistudio.docktailor.sample.mvc.MainApp;
-import com.enosistudio.docktailor.sample.mvc.controller.PersonDockPane;
-import com.enosistudio.docktailor.sample.mvc.controller.TestDockPane;
+import com.enosistudio.docktailor.fx.PopupSaveUI;
+import com.enosistudio.docktailor.fx.fxdock.FxDockWindow;
+import com.enosistudio.docktailor.sample.controller.PersonDockPane;
+import com.enosistudio.docktailor.sample.controller.TestDockPane;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -43,7 +42,7 @@ public class TemplateDockWindow extends FxDockWindow {
     public TemplateDockWindow() {
         super("TemplateDockWindow");
 
-        this.getIcons().add(MainApp.IMAGE);
+//        this.getIcons().add(App.IMAGE);
         FxMenuBar fxMenuBar = this.createMenu();
         this.getScene().widthProperty().addListener((obs, oldVal, newVal) -> fxMenuBar.setMaxWidth(newVal.doubleValue() - 138.0));
         this.setTop(fxMenuBar);
