@@ -21,10 +21,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import lombok.Getter;
+//import lombok.extern.slf4j.Slf4j;
 import net.yetihafen.javafx.customcaption.CaptionConfiguration;
 import net.yetihafen.javafx.customcaption.CustomCaption;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +35,6 @@ public class TemplateDockWindow extends FxDockWindow {
     @Getter
     private final PopupSaveUI popupSaveUI = new PopupSaveUI();
 
-    private static final Logger log = LoggerFactory.getLogger(TemplateDockWindow.class);
     public final FxAction windowCheckAction = new FxAction();
 
     public TemplateDockWindow() {
@@ -119,7 +117,7 @@ public class TemplateDockWindow extends FxDockWindow {
     }
 
     protected static void actionLoadSettings(String fileName) {
-        log.info("Docktailor : Load default interface configuration : {}", fileName);
+        // log.info("Docktailor : Load default interface configuration : {}", fileName);
         GlobalSettings.getInstance().setFileProvider(fileName);
         TemplateDockSchema templateDockSchema = new TemplateDockSchema();
         DocktailorUtility.openDockSystemConf(templateDockSchema);
@@ -133,7 +131,7 @@ public class TemplateDockWindow extends FxDockWindow {
      * @param fileName :
      */
     protected static void actionSaveSettings(String fileName) {
-        log.info("Docktailor : Save current interface configuration in {}", fileName);
+       // log.info("Docktailor : Save current interface configuration in {}", fileName);
         DocktailorUtility.storeLayout(fileName);
         DocktailorService.getInstance().setLastUIConfigUsed(fileName);
         DocktailorService.getInstance().getConfigDocktailor().save();
