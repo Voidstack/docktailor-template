@@ -29,7 +29,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         // setup css
-        Application.setUserAgentStylesheet(DocktailorUtility.getDocktailorCss().getAbsoluteURL().toExternalForm());
+        Application.setUserAgentStylesheet(DocktailorUtility.getDocktailorCss().toExternalForm());
 
         // setup default Ui save
         DocktailorService.setDefaultUiFile(defaultUiFile);

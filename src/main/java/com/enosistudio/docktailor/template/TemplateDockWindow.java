@@ -11,17 +11,16 @@ import com.enosistudio.docktailor.common.GlobalSettings;
 import com.enosistudio.docktailor.fx.FxAction;
 import com.enosistudio.docktailor.fx.FxMenuBar;
 import com.enosistudio.docktailor.fx.LocalSettings;
-import com.enosistudio.docktailor.fx.PopupSaveUI;
 import com.enosistudio.docktailor.fx.fxdock.FxDockWindow;
+import com.enosistudio.docktailor.sample.CustomMenuBar;
 import com.enosistudio.docktailor.sample.controller.PersonDockPane;
 import com.enosistudio.docktailor.sample.controller.TestDockPane;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import lombok.Getter;
-//import lombok.extern.slf4j.Slf4j;
 import net.yetihafen.javafx.customcaption.CaptionConfiguration;
 import net.yetihafen.javafx.customcaption.CustomCaption;
 
@@ -32,32 +31,39 @@ import java.nio.file.Path;
 public class TemplateDockWindow extends FxDockWindow {
     private static final String FILE_1 = Path.of(DocktailorService.getDocktailorSaveFolder(), "docktailor_1.ui").toString();
 
-    @Getter
-    private final PopupSaveUI popupSaveUI = new PopupSaveUI();
+    private CustomMenuBar customMenuBar = null;
 
     public final FxAction windowCheckAction = new FxAction();
 
     public TemplateDockWindow() {
         super("TemplateDockWindow");
 
-//        this.getIcons().add(App.IMAGE);
-        FxMenuBar fxMenuBar = this.createMenu();
-        this.getScene().widthProperty().addListener((obs, oldVal, newVal) -> fxMenuBar.setMaxWidth(newVal.doubleValue() - 138.0));
-        this.setTop(fxMenuBar);
+        // Creation de la barre supérieur.
+        FxMenuBar fxMenuBar = createMenu();
+
+        HBox hBox = new HBox(fxMenuBar);
+        // largeur de la MenuBar = largeur de la fenêtre - 50
+        getScene().widthProperty().addListener((obs, oldVal, newVal) ->
+                hBox.setMaxWidth(newVal.doubleValue() - 138));
+        setTop(hBox);
+
         this.setTitle("DockTailor example");
         LocalSettings.get(this).add("CHECKBOX_MENU", this.windowCheckAction);
-        Platform.runLater(() -> CustomCaption.useForStage(this, (new CaptionConfiguration()).setCaptionDragRegion(fxMenuBar).setControlBackgroundColor(Color.rgb(60, 63, 65))));
+
+        this.setOnShown(observable -> {
+            this.customMenuBar = new CustomMenuBar(hBox, fxMenuBar);
+            CaptionConfiguration cc = new CaptionConfiguration().setCaptionDragRegion(customMenuBar).setControlBackgroundColor(Color.rgb(60, 63, 65)).setCaptionHeight((int)fxMenuBar.getHeight());
+
+            CustomCaption.useForStage(this, cc);
+        });
 
         this.getOnDocktailorEvent().addListener(this::showPopup);
-
-        this.getPopupSaveUI().setOnSave(e -> {
-            actionSaveSettings(FILE_1);
-            PopupSaveUI.hides();
-        });
     }
 
     private void showPopup() {
-        popupSaveUI.show(this.getParentStackPane());
+        if (this.customMenuBar != null) {
+            this.customMenuBar.displayBtnSave(true);
+        }
     }
 
     protected FxMenuBar createMenu() {
