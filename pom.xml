@@ -26,6 +26,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.42</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.launch4j</groupId>
+            <artifactId>launch4j</artifactId>
+            <version>3.50</version>
+        </dependency>
 
         <!-- LOGGING -->
         <dependency>
@@ -34,4 +39,13 @@
             <version>2.25.2</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
