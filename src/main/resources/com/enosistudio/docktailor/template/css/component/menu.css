@@ -1,0 +1,42 @@
+/* MenuBar */
+.context-menu {
+    -fx-background-color: -fx-main;
+    -fx-background-radius: 4;
+}
+
+.separator:horizontal .line {
+    -fx-border-color: -fx-lightgrey;
+    -fx-border-width: 1 0 0 0;
+    -fx-border-insets: 0 0 0 0;
+}
+
+.menu-item, .menu-item:selected, .menu-item:focused {
+    -fx-background-color: transparent;
+}
+
+.menu-item:hover {
+    -fx-background-color: -fx-accent;
+}
+
+.menu, .menu-item {
+    -fx-padding: 8 5 6 5; /* marge interne : top right bottom left */
+}
+
+/* === MENUS === */
+.menu-bar {
+    -fx-background-color: -fx-background;
+    -fx-border-width: 0;
+}
+
+.menu-bar .menu {
+    -fx-background-color: transparent;
+    -fx-text-fill:white;
+}
+
+.menu-bar .menu:hover {
+    -fx-background-color: -fx-accent !important;
+}
+
+.custom-menu-item, custom-menu-item:hover, custom-menu-item:selected{
+    -fx-background-color: -fx-main !important;
+}

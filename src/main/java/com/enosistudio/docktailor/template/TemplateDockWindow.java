@@ -6,30 +6,36 @@
 package com.enosistudio.docktailor.template;
 
 import com.enosistudio.docktailor.DocktailorService;
-import com.enosistudio.docktailor.DocktailorUtility;
-import com.enosistudio.docktailor.common.GlobalSettings;
+import com.enosistudio.docktailor.common.AGlobalSettings;
+import com.enosistudio.docktailor.common.FxTooltipDebugCss;
 import com.enosistudio.docktailor.fx.FxAction;
 import com.enosistudio.docktailor.fx.FxMenuBar;
-import com.enosistudio.docktailor.fx.LocalSettings;
 import com.enosistudio.docktailor.fx.fxdock.FxDockWindow;
-import com.enosistudio.docktailor.sample.CustomMenuBar;
-import com.enosistudio.docktailor.sample.controller.PersonDockPane;
-import com.enosistudio.docktailor.sample.controller.TestDockPane;
+import com.enosistudio.docktailor.template.fx.CustomMenuBar;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import lombok.extern.slf4j.Slf4j;
 import net.yetihafen.javafx.customcaption.CaptionConfiguration;
 import net.yetihafen.javafx.customcaption.CustomCaption;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Slf4j
 public class TemplateDockWindow extends FxDockWindow {
-    private static final String FILE_1 = Path.of(DocktailorService.getDocktailorSaveFolder(), "docktailor_1.ui").toString();
 
     private CustomMenuBar customMenuBar = null;
 
@@ -38,97 +44,48 @@ public class TemplateDockWindow extends FxDockWindow {
     public TemplateDockWindow() {
         super("TemplateDockWindow");
 
-        // Creation de la barre supérieur.
+        // Create the top menu bar
         FxMenuBar fxMenuBar = createMenu();
 
         HBox hBox = new HBox(fxMenuBar);
-        // largeur de la MenuBar = largeur de la fenêtre - 50
+        // MenuBar width = window width - 138
         getScene().widthProperty().addListener((obs, oldVal, newVal) ->
                 hBox.setMaxWidth(newVal.doubleValue() - 138));
         setTop(hBox);
 
-        this.setTitle("DockTailor example");
-        LocalSettings.get(this).add("CHECKBOX_MENU", this.windowCheckAction);
-
+        // Need to have the bounds generated
         this.setOnShown(observable -> {
             this.customMenuBar = new CustomMenuBar(hBox, fxMenuBar);
-            CaptionConfiguration cc = new CaptionConfiguration().setCaptionDragRegion(customMenuBar).setControlBackgroundColor(Color.rgb(60, 63, 65)).setCaptionHeight((int)fxMenuBar.getHeight());
+            CaptionConfiguration cc = new CaptionConfiguration().setCaptionDragRegion(customMenuBar).setControlBackgroundColor(Color.rgb(60, 63, 65)).setCaptionHeight((int) fxMenuBar.getHeight());
 
             CustomCaption.useForStage(this, cc);
         });
 
-        this.getOnDocktailorEvent().addListener(this::showPopup);
+        getOnDocktailorEvent().addListener(this::showPopup);
+
     }
 
-    private void showPopup() {
+    public void showPopup() {
         if (this.customMenuBar != null) {
             this.customMenuBar.displayBtnSave(true);
         }
     }
 
-    protected FxMenuBar createMenu() {
-        FxMenuBar fxMenuBar = new FxMenuBar();
-        Menu menuApplication = new Menu("Application");
-        fxMenuBar.add(menuApplication);
-        Platform.runLater(() -> {
-            MenuItem menuItemOpenConf = new MenuItem("\uD83D\uDCC2 Ouvrir l'explorateur de fichiers");
-            menuItemOpenConf.setOnAction(e -> openFolder(DocktailorService.getDocktailorSaveFolder()));
-            menuApplication.getItems().add(menuItemOpenConf);
-
-            MenuItem menuItemSaveLayout = new MenuItem("\uD83D\uDCBE Sauvegarder la configuration");
-            menuItemSaveLayout.setOnAction(e -> actionSaveSettings(FILE_1));
-            menuApplication.getItems().add(menuItemSaveLayout);
-
-            MenuItem menuItemLoadLayout = new MenuItem("Recharger la configuration");
-            menuItemLoadLayout.setOnAction(e -> actionLoadSettings(FILE_1));
-            menuApplication.getItems().add(menuItemLoadLayout);
-
-            MenuItem menuItemDefaultConf = new MenuItem("Charger la configuration par défaut");
-            menuItemDefaultConf.setOnAction(e -> actionLoadSettings(DocktailorService.getDefaultUiFile()));
-            menuApplication.getItems().add(menuItemDefaultConf);
-
-            menuApplication.getItems().add(new SeparatorMenuItem());
-
-            MenuItem menuLeaveApp = new MenuItem("❌ Quitter l'application");
-            menuLeaveApp.setOnAction(e -> DocktailorUtility.exit());
-            menuApplication.getItems().add(menuLeaveApp);
-        });
-        Menu menuWindows = new Menu("Windows");
-
-        DocktailorService.getInstance().setAll(PersonDockPane.class, TestDockPane.class);
-
-        menuWindows.getItems().setAll(DocktailorService.getInstance().createMenuItems(this));
-        fxMenuBar.add(menuWindows);
-        return fxMenuBar;
-    }
-
-
-    /**
-     * Ouvre l’explorateur de fichiers Windows à l’emplacement du fichier de configuration.
-     */
-    private void openFolder(String folderString) {
-        try {
-            File file = new File(folderString);
-            if (file.exists()) {
-                // Ouvre l’explorateur sur le fichier sélectionné
-                new ProcessBuilder("explorer.exe", "/select,", file.getAbsolutePath()).start();
-            } else {
-                // Si le fichier n’existe pas encore, ouvre simplement le dossier
-                new ProcessBuilder("explorer.exe", file.getParentFile().getAbsolutePath()).start();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Impossible d’ouvrir l’explorateur de fichiers", e);
-        }
-
+    private static void loadDefaultAction() {
+        log.info("Docktailor : Load default interface configuration");
+        actionLoadSettings(DocktailorService.getInstance().getDefaultUiFile());
     }
 
     protected static void actionLoadSettings(String fileName) {
-        // log.info("Docktailor : Load default interface configuration : {}", fileName);
-        GlobalSettings.getInstance().setFileProvider(fileName);
-        TemplateDockSchema templateDockSchema = new TemplateDockSchema();
-        DocktailorUtility.openDockSystemConf(templateDockSchema);
+        log.info("Docktailor : Load default interface configuration : {}", fileName);
+
+        DocktailorService.getInstance().getGlobalSettings().setFileProvider(fileName);
+        AGlobalSettings store = DocktailorService.getInstance().getGlobalSettings();
+        TemplateDockSchema demoDockSchema = new TemplateDockSchema(store);
+
+        DocktailorService.openDockSystemConf(demoDockSchema);
+
         DocktailorService.getInstance().setLastUIConfigUsed(fileName);
-        DocktailorService.getInstance().getConfigDocktailor().save();
     }
 
     /**
@@ -137,9 +94,100 @@ public class TemplateDockWindow extends FxDockWindow {
      * @param fileName :
      */
     protected static void actionSaveSettings(String fileName) {
-       // log.info("Docktailor : Save current interface configuration in {}", fileName);
-        DocktailorUtility.storeLayout(fileName);
-        DocktailorService.getInstance().setLastUIConfigUsed(fileName);
+        log.info("Docktailor : Save current interface configuration in {}", fileName);
+        DocktailorService.getSchema().storeLayout(fileName);
         DocktailorService.getInstance().getConfigDocktailor().save();
+        DocktailorService.getInstance().setLastUIConfigUsed(fileName);
+
+        //AppConfigManager.getInstance().saveProperty(AppConfigManager.LAST_UI_CONFIG_SAVED, fileName);
+    }
+
+    protected FxMenuBar createMenu() {
+        FxMenuBar fxMenuBar = new FxMenuBar();
+
+        Menu menuApplication = new Menu("Application");
+
+        fxMenuBar.add(menuApplication);
+
+        Platform.runLater(() -> {
+
+            DocktailorService.getInstance().getPredefinedUiFiles().forEach((s, s2) ->
+                    menuApplication.getItems().add(addCustomConfiguration(s, s2)));
+
+            menuApplication.getItems().add(new SeparatorMenuItem());
+
+            MenuItem menuOpenSaveFolder = new MenuItem("Open save folder");
+            menuOpenSaveFolder.setOnAction(e -> {
+                try {
+                    File configFile = new File(DocktailorService.getInstance().getConfigFile());
+                    Desktop.getDesktop().open(configFile.getParentFile());
+                } catch (IOException ex) {
+                    log.error(ex.getMessage(), ex);
+                }
+            });
+            menuApplication.getItems().add(menuOpenSaveFolder);
+
+            MenuItem menuItemDefaultConf = new MenuItem("Load default configuration");
+            menuItemDefaultConf.setOnAction(e -> TemplateDockWindow.loadDefaultAction());
+            menuApplication.getItems().add(menuItemDefaultConf);
+
+            MenuItem menuLeaveApp = new MenuItem("Exit application");
+            menuLeaveApp.setOnAction(e -> DocktailorService.exit());
+            menuApplication.getItems().add(menuLeaveApp);
+
+            MenuItem showPopup = new MenuItem("Show popup save");
+            showPopup.setOnAction(e -> showPopup());
+            menuApplication.getItems().add(showPopup);
+
+            CheckMenuItem checkMenuItem = new CheckMenuItem("Debug css");
+
+            checkMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue)
+                    FxTooltipDebugCss.install(this.getScene());
+                else
+                    FxTooltipDebugCss.uninstall(this.getScene());
+            });
+            menuApplication.getItems().add(checkMenuItem);
+        });
+
+        Menu menuWindows = new Menu("Windows");
+        menuWindows.getItems().addAll(DocktailorService.getInstance().createMenuItems(this));
+        fxMenuBar.add(menuWindows);
+
+        return fxMenuBar;
+    }
+
+    /**
+     * Adds a Node to an FxMenuBar.
+     *
+     * @param strLabel : Displayed name
+     * @param fileName : File name
+     * @return CustomMenuItem
+     */
+    private CustomMenuItem addCustomConfiguration(String strLabel, String fileName) {
+        HBox hbox = new HBox();
+        CustomMenuItem menuCustomSave1 = new CustomMenuItem(hbox);
+        menuCustomSave1.setHideOnClick(false);
+
+        hbox.setSpacing(3);
+        hbox.setPadding(Insets.EMPTY);
+        hbox.setAlignment(Pos.CENTER);
+        javafx.scene.control.Label label = new Label(strLabel);
+
+        Region separator = new Region();
+        HBox.setHgrow(separator, Priority.ALWAYS);
+
+        hbox.getChildren().addAll(label, separator);
+
+        javafx.scene.control.Button btnSave = new javafx.scene.control.Button("Save");
+        btnSave.setOnAction(event -> actionSaveSettings(fileName));
+        hbox.getChildren().add(btnSave);
+
+        if (Files.exists(Path.of(fileName))) {
+            javafx.scene.control.Button btnLoad = new Button("Load");
+            btnLoad.setOnAction(event -> actionLoadSettings(fileName));
+            hbox.getChildren().add(btnLoad);
+        }
+        return menuCustomSave1;
     }
 }

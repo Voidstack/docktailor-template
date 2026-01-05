@@ -1,0 +1,71 @@
+/*
+    The JavaFX components are based on the modena.css file
+    We instantiate variables with the same name as those in modena.css but with different values
+    This allows us to not "break" the JavaFX components and avoid rewriting all bg/hover/clicked... 156 times
+
+    The modena.css file is included in the project for copy/paste purposes but should not be used except as an example.
+*/
+
+/* Import */
+@import url("modena.css");
+
+@import url("../component/tableView.css");
+@import url("../component/cartoTooltip.css");
+@import url("../component/menu.css");
+@import url("../component/tab.css");
+@import url("../component/checkbox.css");
+@import url("../component/listView.css");
+@import url("../component/treeView.css");
+@import url("../component/toolbar.css");
+@import url("../component/separator.css");
+@import url("../component/colorPicker.css");
+@import url("../component/button.css");
+@import url("../component/betterRadioButton.css");
+@import url("../component/split-pane.css");
+@import url("../component/scroll-bar.css");
+
+.root {
+    -fx-darkmain: #1e1f22;
+    -fx-base: -fx-darkmain;
+
+    -fx-main: #3c3f40;
+    -fx-background: -fx-main;
+
+    -fx-lightmain: #4c4d50;
+
+    -fx-control-inner-background: #3C3F41;
+    -fx-control-inner-background: #353739;
+
+    /* TEXT */
+    -fx-text-fill: #FFFFFF;
+    -fx-text-base-color: #FFFFFF;
+    -fx-font-size: 14px;
+
+    /* ACCENT - DISABLE */
+    -fx-accent: #5288f3;
+    -fx-selection-bar: #214283;
+    -fx-selection-bar-non-focused: #0D293E;
+    -fx-accent-transparent: rgba(82, 136, 243, 0.5);
+
+    /* BORDURES */
+    -fx-outer-border: #323232;
+    -fx-inner-border: #515151;
+    -fx-body-color: #3C3F41;
+
+    /* FOCUS - DISABLE */
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+
+    /* SPECIAL */
+    -fx-dark-text-color: #BBBBBB;
+    -fx-mid-text-color: #8C8C8C;
+    -fx-light-text-color: #FFFFFF;
+    -fx-debug: #bb0000;
+}
+
+/* TODO : delete */
+.bordered-label {
+    -fx-border-width: 1px;
+    -fx-border-color: -fx-accent;
+    -fx-padding: 3px;
+}

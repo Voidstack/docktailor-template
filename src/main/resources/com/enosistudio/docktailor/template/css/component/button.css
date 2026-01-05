@@ -1,0 +1,23 @@
+.button, .button:selected, .button:focused, .button:hover {
+    -fx-background-insets: 0 !important;
+}
+
+.button, .button:selected, .button:focused{
+    -fx-background-color: derive(-fx-body-color, 12%);
+}
+
+.button:hover {
+    -fx-background-color: derive(-fx-body-color, -12%);
+}
+
+.button:pressed {
+    -fx-background-color: derive(-fx-body-color, -20%);
+}
+
+.buttonValid{
+    -fx-background-color: -fx-accent;
+}
+
+.buttonTransluent{
+    -fx-background-color: transparent;
+}

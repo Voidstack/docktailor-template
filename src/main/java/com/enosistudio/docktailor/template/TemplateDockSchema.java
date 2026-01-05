@@ -1,12 +1,10 @@
 package com.enosistudio.docktailor.template;
 
 import com.enosistudio.docktailor.DocktailorService;
-import com.enosistudio.docktailor.common.GlobalSettings;
+import com.enosistudio.docktailor.common.AGlobalSettings;
 import com.enosistudio.docktailor.fx.fxdock.FxDockPane;
 import com.enosistudio.docktailor.fx.fxdock.FxDockSchema;
 import com.enosistudio.docktailor.fx.fxdock.internal.IDockPane;
-
-import java.util.Iterator;
 
 /**
  * TemplateDockSchema is a subclass of FxDockSchema that provides methods
@@ -18,8 +16,8 @@ public class TemplateDockSchema extends FxDockSchema {
     /**
      * Constructs a TemplateDockSchema instance using the global settings.
      */
-    public TemplateDockSchema() {
-        super(GlobalSettings.getInstance());
+    public TemplateDockSchema(AGlobalSettings globalSettings) {
+        super(globalSettings);
     }
 
     /**
@@ -31,18 +29,13 @@ public class TemplateDockSchema extends FxDockSchema {
      *                                  or if the configuration file is corrupted.
      */
     public FxDockPane createPane(String id) throws IllegalArgumentException {
-        Iterator<IDockPane> var2 = DocktailorService.getInstance().getNewInstances().iterator();
-
-        IDockPane newInstance;
-        do {
-            if (!var2.hasNext()) {
-                throw new IllegalArgumentException("Le fichier de configuration pour docktailor est corrompue");
+        for (IDockPane newInstance : DocktailorService.getInstance().getNewInstances()) {
+            if (id.equals(newInstance.getTabName())) {
+                return newInstance.createDockPane();
             }
+        }
 
-            newInstance = var2.next();
-        } while (!id.equals(newInstance.getTabName()));
-
-        return newInstance.createDockPane();
+        throw new IllegalArgumentException("Docktailor configuration file is corrupted");
     }
 
     /**

@@ -1,42 +1,45 @@
 package com.enosistudio.docktailor.template;
 
 import com.enosistudio.docktailor.DocktailorService;
-import com.enosistudio.docktailor.DocktailorUtility;
 import com.enosistudio.docktailor.common.GlobalSettings;
+import com.enosistudio.docktailor.template.dock.*;
+import com.enosistudio.docktailor.template.generated.R;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
+@Slf4j
 public class App extends Application {
-    @Getter
-    private static final List<String> ARGS = new ArrayList<>();
 
-    String defaultUiFile = App.class.getResource("/com/enosistudio/docktailor/template/template_default.conf").getFile();
+    private final String saveFolder = Path.of(System.getenv("APPDATA"), "enosistudio", "docktailor-template").toString();
+
+    private final Map<String, String> predefinedUiFiles = Map.of(
+            "Configuration #1", Path.of(saveFolder, "docktailor_1.ui").toString(),
+            "Configuration #2", Path.of(saveFolder, "docktailor_2.ui").toString(),
+            "Configuration #3", Path.of(saveFolder, "docktailor_3.ui").toString()
+    );
 
     public static void main(String[] args) {
-        ARGS.addAll(Arrays.stream(args).toList());
-        DocktailorService.IS_DEBUG = ARGS.contains("-debug");
-        DocktailorService.setDocktailorSaveFolder(Path.of(System.getenv("APPDATA"), "enosistudio", "docktailor-template").toString());
-
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) {
+        log.info("MainApp : Application start");
+
         // setup css
-        Application.setUserAgentStylesheet(DocktailorUtility.getDocktailorCss().toExternalForm());
+        Application.setUserAgentStylesheet(R.com.enosistudio.docktailor.template.css.modena.mainCss.toExternalForm());
 
-        // setup default Ui save
-        DocktailorService.setDefaultUiFile(defaultUiFile);
-
-        // set file to use to load the app (the last config saved here)
-        GlobalSettings.getInstance().setFileProvider(DocktailorService.getInstance().getLastUIConfigUsed());
-
-        DocktailorUtility.openDockSystemConf(new TemplateDockSchema());
+        GlobalSettings docktailorSettings = DocktailorService.getInstance()
+                .setConfigFile(Path.of(saveFolder, "docktailor.conf").toString())
+                .setDefaultUiFile(R.com.enosistudio.docktailor.template.docktailorDefaultUi.getURL().getFile())
+                .setPredefinedUiFiles(predefinedUiFiles)
+                .setDraggableTab(PersonDockPane.class, TestDockPane.class, RedDockPane.class, BlueDockPane.class, GreenDockPane.class)
+                .init();
+        TemplateDockSchema demoDockSchema = new TemplateDockSchema(docktailorSettings);
+        DocktailorService.openDockSystemConf(demoDockSchema);
     }
 }
