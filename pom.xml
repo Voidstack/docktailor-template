@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.enosistudio</groupId>
             <artifactId>docktailor</artifactId>
-            <version>1.0.3</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.enosistudio</groupId>
@@ -42,6 +42,37 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.7.1</version>
+                <executions>
+                    <execution>
+                        <id>win</id>
+                    </execution>
+                </executions>
+                <configuration>
+                    <name>DocktailorTemplate</name>
+                    <appVersion>1.0.0</appVersion>
+                    <vendor>EnosiStudio</vendor>
+
+                    <input>${project.build.directory}</input>
+                    <mainJar>${project.build.finalName}.jar</mainJar>
+                    <mainClass>com.enosistudio.docktailor.template.App</mainClass>
+
+<!--                    <type>EXE</type>-->
+
+                    <!-- IMPORTANT : ton JDK JavaFX -->
+                    <runtimeImage>
+                        C:\Users\bapti\.jdks\zulu21.46.19-ca-fx-jdk21.0.9-win_x64
+                    </runtimeImage>
+
+                    <!-- Ajouté : dossier où l’EXE sera généré -->
+                    <destination>${project.build.directory}/jpackage</destination>
+                    <winMenu>true</winMenu>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>com.enosistudio</groupId>
                 <artifactId>r-for-maven</artifactId>
