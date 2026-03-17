@@ -4,7 +4,7 @@ import com.enosistudio.docktailor.DocktailorService;
 import com.enosistudio.docktailor.common.AGlobalSettings;
 import com.enosistudio.docktailor.fx.fxdock.FxDockPane;
 import com.enosistudio.docktailor.fx.fxdock.FxDockSchema;
-import com.enosistudio.docktailor.fx.fxdock.internal.IDockPane;
+import com.enosistudio.docktailor.fx.fxdock.IDockPane;
 
 /**
  * TemplateDockSchema is a subclass of FxDockSchema that provides methods

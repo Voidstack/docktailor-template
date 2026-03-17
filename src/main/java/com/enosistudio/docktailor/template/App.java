@@ -2,6 +2,7 @@ package com.enosistudio.docktailor.template;
 
 import com.enosistudio.docktailor.DocktailorService;
 import com.enosistudio.docktailor.common.GlobalSettings;
+import com.enosistudio.docktailor.fx.WindowMonitor;
 import com.enosistudio.docktailor.template.dock.*;
 import com.enosistudio.docktailor.template.generated.R;
 import javafx.application.Application;
@@ -41,5 +42,7 @@ public class App extends Application {
                 .init();
         TemplateDockSchema demoDockSchema = new TemplateDockSchema(docktailorSettings);
         DocktailorService.openDockSystemConf(demoDockSchema);
+
+        WindowMonitor.getOnAllWindowsClosed().addListener(unused -> log.info("MainApp : All windows closed, exiting application"));
     }
 }

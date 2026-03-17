@@ -61,7 +61,7 @@ public class TemplateDockWindow extends FxDockWindow {
             CustomCaption.useForStage(this, cc);
         });
 
-        getOnDocktailorEvent().addListener(this::showPopup);
+        getOnDocktailorEvent().addListener(e -> showPopup());
 
     }
 
